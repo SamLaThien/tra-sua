@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Menu</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+    :root { 
+        --primary: #4CAF50; 
+        --accent: #e67e22; 
+        --bg: #f0f2f5; /* Nền xám nhạt thay cho ảnh */
+        --text: #2d3436;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    html {
+        height: auto !important;
+        overflow: auto !important;
+    }
+
+    body { 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        background-color: var(--bg); /* BỎ ẢNH NỀN CHUYỂN SANG MÀU ĐƠN SẮC */
+        color: var(--text);
+        height: auto !important;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: auto !important;
+    }
+
+    .menu-section { 
+        flex: 1; 
+        display: flex; 
+        flex-direction: column; 
+        padding: 12px; 
+        overflow: visible;
+        margin: 10px;
+    }
+
+    .menu-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        flex-shrink: 0;
+    }
+    
+    .btn-add-custom { 
+        background: #6c5ce7; 
+        color: white; 
+        border: none; 
+        padding: 8px 14px; 
+        border-radius: 20px; 
+        font-size: 12px; 
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* ĐÃ XÓA CSS menu-image-container */
+
+    .menu-scroll-container {
+        flex-grow: 1;
+        overflow-y: visible;
+        padding-bottom: 80px;
+    }
+
+    .items-grid { 
+        display: grid; 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 12px; 
+    }
+
+    .category-group-title {
+        font-size: 13px;
+        font-weight: 800;
+        color: #fff;
+        background: #2d3436 !important; /* Dùng màu đậm thay vì làm mờ */
+        padding: 8px 16px;
+        margin: 20px 0 10px 0;
+        border-radius: 20px;
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .category-group:first-child .category-group-title { margin-top: 0; }
+
+    .item-card { 
+        background: #ffffff !important; /* Nền thẻ trắng tinh */
+        padding: 16px 10px; 
+        border-radius: 10px; 
+        text-align: center; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Chỉnh bóng cho đẹp */
+        transition: transform 0.15s;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .item-card:active { 
+        transform: scale(0.95); 
+        background: #f8fafc !important; 
+    }
+    
+    .item-card h4 { 
+        font-size: 14px; 
+        font-weight: 800;
+        min-height: 36px;
+        margin-bottom: 12px; 
+        color: #ffffff; 
+        background: #334155; /* Nền nhãn xám đậm */
+        padding: 8px 6px;
+        border-radius: 10px; 
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); 
+        display: -webkit-box; 
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical; 
+        width: 100%; 
+    }
+
+    .item-card b { 
+        color: #d35400; 
+        font-size: 14px; 
+        font-weight: 900;
+        background: #fff3e0; 
+        padding: 4px 12px;
+        border-radius: 12px;
+    }
+
+    /* FLOATING CART BUTTON */
+    .cart-fab {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        z-index: 99;
+        border: none;
+        cursor: pointer;
+    }
+    .cart-fab svg { width: 28px; height: 28px; fill: white; }
+    .cart-badge {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        background: #ff7675;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+    }
+
+    /* MODAL OVERLAY */
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: flex-end;
+        z-index: 100;
+    }
+    .modal-overlay.open { display: flex; }
+    
+    .modal-content {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        height: 95dvh; 
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        animation: slideUp 0.2s ease-out;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    #topping-modal .modal-content {
+        height: auto;
+        max-height: 75dvh;
+        margin: auto 15px;
+        border-radius: 20px;
+    }
+
+    .modal-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fafafa;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        flex-shrink: 0;
+    }
+    .modal-header h3 { font-size: 17px; color: #334155; }
+    .btn-close-modal { background: none; border: none; font-size: 26px; color: #94a3b8; cursor: pointer; padding: 0 10px; }
+
+    #bill-container { flex: 1; overflow-y: auto; background: white; }
+    .order-list { padding: 5px 12px; }
+    
+    .order-item { padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+    .item-main-row { display: flex; justify-content: space-between; align-items: flex-start; }
+    .item-info { flex: 1; display: flex; flex-direction: column; padding-right: 8px; overflow: hidden; }
+    
+    .item-name-title { font-size: 14px; font-weight: bold; color: #1e293b; display: block; margin-bottom: 3px; word-break: break-word; }
+
+    .action-buttons-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+    .btn-add-top { background: #3498db; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
+    .btn-user-tag { background: #e67e22; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
+
+    .sub-info-row { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+    .sub-info-row small { font-size: 12px; color: #64748b; font-weight: 500; }
+    .note-input { border: none; border-bottom: 1px dashed #e67e22; padding: 2px 4px; font-size: 12px; outline: none; background: transparent; color: #e67e22; width: 110px; font-style: italic; }
+    .note-input::placeholder { color: #cbd5e1; font-style: normal; }
+    
+    .note-display-line { font-size: 12px; color: #e67e22; margin-top: 2px; font-weight: bold; }
+    .topping-line { font-size: 12px; color: #64748b; margin-top: 3px; font-style: italic; }
+    .topping-bold-text { color: var(--accent); font-weight: 600; font-style: normal; }
+    .user-tag-line { font-size: 12px; color: #2d3436; margin-top: 3px; font-weight: bold; }
+    .user-tag-name { color: #0984e3; }
+
+    .qty-controls { display: flex; align-items: center; gap: 8px; margin: 0 4px; flex-shrink: 0; }
+    .btn-qty { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #cbd5e1; background: #fff; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .item-total-price-box { width: 70px; text-align: right; font-size: 14px; font-weight: bold; color: #1e293b; padding-top: 3px; }
+
+    .total-area { padding: 14px 16px; border-top: 2px solid #f1f5f9; background: #fafafa; flex-shrink: 0; }
+    .total-row { display: flex; justify-content: space-between; font-size: 19px; font-weight: bold; margin-bottom: 12px; }
+    
+    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-clear { background: #ff7675; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; }
+    .btn-download { background: #0984e3; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; }
+
+    .topping-option-row { display: flex; justify-content: space-between; padding: 14px 5px; border-bottom: 1px solid #edf2f7; font-size: 16px; }
+    .topping-option-row label { display: flex; align-items: center; gap: 10px; width: 100%; cursor: pointer; }
+    .topping-option-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); }
+
+    @media (min-width: 768px) {
+        .modal-overlay { align-items: center; }
+        .modal-content { width: 450px; height: 85dvh; border-radius: 20px; }
+        #topping-modal .modal-content { width: 380px; height: auto; }
+        .modal-header { border-radius: 20px 20px 0 0; }
+    }
+</style>
+
+</head>
+<body>
+
+    <div class="menu-section">
+        <div class="menu-header-bar">
+            <h3 style="color: #475569; font-size: 16px; font-weight:bold;">Menu Quán</h3>
+            <button class="btn-add-custom" onclick="addCustomItem()">+ MÓN NGOÀI</button>
+        </div>
+        
+        <!-- ĐÃ XÓA div chứa ảnh menu ở đây -->
+
+        <div class="menu-scroll-container" id="menu-scroll-view"></div>
+    </div>
+
+    <button class="cart-fab" onclick="toggleBillModal(true)">
+        <svg viewBox="0 0 24 24">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+        </svg>
+        <div class="cart-badge" id="cart-badge">0</div>
+    </button>
+
+    <!-- MODAL GIỎ HÀNG -->
+    <div class="modal-overlay" id="bill-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Chi tiết đơn hàng</h3>
+                <button class="btn-close-modal" onclick="toggleBillModal(false)">&times;</button>
+            </div>
+            
+            <div id="bill-container">
+                <div class="order-list" id="order-list"></div>
+            </div>
+
+            <div class="total-area">
+                <!-- GIÁ TRỊ TỔNG TIỀN NÀY CHỈ HIỂN THỊ TRONG APP -->
+                <div class="total-row">
+                    <span>TỔNG:</span>
+                    <span id="total-price" style="color:var(--accent)">0đ</span>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-clear" onclick="clearAll()">XÓA HẾT</button>
+                    <button class="btn-download" onclick="downloadFullBill()">TẢI ẢNH BILL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TOPPING -->
+    <div class="modal-overlay" id="topping-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="topping-modal-title">Tùy chỉnh Topping</h3>
+                <button class="btn-close-modal" onclick="closeToppingModal()">&times;</button>
+            </div>
+            <div id="topping-options-list" style="padding: 10px 20px; overflow-y:auto; flex:1;"></div>
+            <div style="padding:15px; background:#fafafa; border-top:1px solid #eee;">
+                <button class="btn-clear" style="margin:0; width:100%; background:var(--primary);" onclick="closeToppingModal()">HOÀN THÀNH</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const menuData = {
+      "TRÀ SỮA SỐT MÔN": [
+        {name: "Trà sữa khoai môn", price: 20000},
+        {name: "Khoai môn sốt môn", price: 35000},
+        {name: "Sữa tươi trân châu đường đen (700ml)", price: 25000},
+        {name: "Olong sốt môn", price: 30000},
+        {name: "Sữa tươi sốt môn (700ml)", price: 30000},
+        {name: "Gạo rang sốt môn", price: 35000}
+      ],
+      "TRÀ SỮA ĐẬM TRÀ": [
+        {name: "Trà sữa Olong", price: 25000},
+        {name: "Trà sữa gạo rang", price: 30000},
+        {name: "Trà sữa matcha đặc biệt", price: 30000},
+        {name: "Trà sữa cacao đặc biệt", price: 30000}
+      ],
+      "TRÀ SỮA THÁI LAN": [
+        {name: "Thái đỏ", price: 20000},
+        {name: "Thái xanh", price: 20000}
+      ],
+      "TRÀ SỮA CÁC VỊ": [
+        {name: "Trà sữa truyền thống", price: 20000},
+        {name: "Trà sữa socola", price: 25000},
+        {name: "Trà sữa matcha", price: 25000},
+        {name: "Trà sữa mix các vị", price: 25000},
+        {name: "Trà sữa nướng", price: 30000}
+      ],
+      "ĐÁ XAY": [
+        {name: "Matcha đá xay (500ml)", price: 27000},
+        {name: "Matcha đá xay (700ml)", price: 35000},
+        {name: "Cacao đá xay (500ml)", price: 27000},
+        {name: "Cacao đá xay (700ml)", price: 35000}
+      ],
+      "MỚI (SIZE 1 LÍT)": [
+        {name: "Sâm long nhãn", price: 30000},
+        {name: "Sâm long nhãn hạt sen", price: 35000},
+        {name: "Lục trà long nhãn", price: 30000},
+        {name: "Lục trà sen long nhãn", price: 35000},
+        {name: "Trà sữa Olong nhãn (700ml)", price: 30000},
+        {name: "Trà sữa Olong nhãn (1 Lít)", price: 35000},
+        {name: "Trà sữa Olong nhãn sen (700ml)", price: 30000},
+        {name: "Trà sữa Olong nhãn sen (1 Lít)", price: 35000}
+      ],
+      "TRÀ TRÁI CÂY (SIZE 1 LÍT)": [
+        {name: "Trà dâu tươi", price: 25000},
+        {name: "Trà trái cây", price: 28000},
+        {name: "Trà dưa lưới", price: 25000},
+        {name: "Trà dâu tằm", price: 25000},
+        {name: "Trà vải", price: 25000},
+        {name: "Trà mãng cầu", price: 25000},
+        {name: "Trà thơm", price: 25000},
+        {name: "Trà kiwi", price: 25000},
+        {name: "Trà ổi hồng", price: 25000},
+        {name: "Trà việt quất đặc", price: 25000},
+        {name: "Trà nho đặc", price: 25000},
+        {name: "Trà chanh dây đặc rim", price: 25000},
+        {name: "Trà xoài", price: 25000},
+        {name: "Trà đào", price: 25000}
+      ],
+      "LATTE": [
+        {name: "Matcha Latte (700ml)", price: 25000},
+        {name: "Matcha Latte (1 Lít)", price: 30000},
+        {name: "Cacao Latte (700ml)", price: 25000},
+        {name: "Cacao Latte (1 Lít)", price: 30000},
+        {name: "Khoai Môn Latte (700ml)", price: 25000},
+        {name: "Khoai Môn Latte (1 Lít)", price: 30000},
+        {name: "Matcha việt quất", price: 25000},
+        {name: "Xoài matcha", price: 25000}
+      ],
+      "SINH TỐ": [
+        {name: "Sinh tố đào", price: 25000},
+        {name: "Sinh tố dâu", price: 30000},
+        {name: "Sinh tố mãng cầu", price: 25000},
+        {name: "Sinh tố vải", price: 25000},
+        {name: "Sinh tố nho", price: 25000},
+        {name: "Sinh tố việt quất", price: 25000},
+        {name: "Sinh tố dưa lưới", price: 25000},
+        {name: "Sinh tố kiwi", price: 25000}
+      ],
+      "YAOURT (SIZE 700ML)": [
+        {name: "Yaourt chanh dây", price: 25000},
+        {name: "Yaourt trái cây", price: 30000},
+        {name: "Yaourt việt quất", price: 25000},
+        {name: "Yaourt dâu", price: 25000},
+        {name: "Yaourt đào", price: 25000},
+        {name: "Yaourt vải", price: 25000},
+        {name: "Yaourt xoài", price: 25000},
+        {name: "Yaourt kiwi", price: 25000},
+        {name: "Yaourt ổi", price: 25000},
+        {name: "Yaourt thơm", price: 25000},
+        {name: "Yaourt nho", price: 25000},
+        {name: "Yaourt dưa lưới", price: 25000}
+      ]
+    };
+
+        const toppingMenu = [
+            {name: "Thêm Flan", price: 6000},
+            {name: "Thêm Machiato", price: 10000}
+        ];
+
+        let currentOrder = JSON.parse(localStorage.getItem('quao_house_cart')) || [];
+        let activeItemIndex = null;
+
+        function saveCartToStorage() {
+            localStorage.setItem('quao_house_cart', JSON.stringify(currentOrder));
+        }
+
+        function toggleBillModal(show) {
+            const modal = document.getElementById('bill-modal');
+            if (show) modal.classList.add('open'); else modal.classList.remove('open');
+        }
+
+        document.getElementById('bill-modal').addEventListener('click', function(e) {
+            if(e.target === this) toggleBillModal(false);
+        });
+        
+        function renderCategorizedMenu() {
+            let htmlContent = "";
+            for (let catName in menuData) {
+                htmlContent += `
+                    <div class="category-group">
+                        <div class="category-group-title">${catName}</div>
+                        <div class="items-grid">
+                            ${menuData[catName].map(item => `
+                                <div class="item-card" onclick="addToOrder('${item.name}',${item.price})">
+                                    <h4>${item.name}</h4><b>${item.price.toLocaleString()}đ</b>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('menu-scroll-view').innerHTML = htmlContent;
+        }
+
+        function addCustomItem() {
+            const name = prompt("Tên món ngoài menu:");
+            if (!name) return;
+            const price = parseInt(prompt("Giá tiền:"));
+            if (isNaN(price)) return;
+            addToOrder(name, price);
+        }
+
+        function addToOrder(name, price) {
+            currentOrder.push({ name, price, qty: 1, note: "", toppings: [], userTag: "" });
+            renderOrder();
+        }
+
+        function updateQty(index, delta) {
+            currentOrder[index].qty += delta;
+            if (currentOrder[index].qty <= 0) {
+                currentOrder.splice(index, 1);
+            }
+            renderOrder();
+        }
+
+        function updateNote(index, noteText) {
+            currentOrder[index].note = noteText;
+            saveCartToStorage();
+        }
+
+        function updateUserTag(index) {
+            const currentUser = currentOrder[index].userTag;
+            const user = prompt("Nhập tên người đặt món này:", currentUser);
+            if (user !== null) {
+                currentOrder[index].userTag = user.trim();
+                renderOrder();
+            }
+        }
+
+        function openToppingModal(index) {
+            activeItemIndex = index;
+            const item = currentOrder[index];
+            document.getElementById('topping-modal-title').innerText = `Topping: ${item.name}`;
+            
+            document.getElementById('topping-options-list').innerHTML = toppingMenu.map(t => {
+                const isChecked = item.toppings.find(x => x.name === t.name) ? 'checked' : '';
+                return `
+                    <div class="topping-option-row">
+                        <label>
+                            <input type="checkbox" ${isChecked} onchange="toggleToppingItem('${t.name}', ${t.price}, this.checked)">
+                            <span>${t.name}</span>
+                        </label>
+                        <span style="color:#64748b; font-size:15px;">+${t.price.toLocaleString()}đ</span>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('topping-modal').classList.add('open');
+        }
+
+        function toggleToppingItem(name, price, isChecked) {
+            let item = currentOrder[activeItemIndex];
+            if (isChecked) {
+                item.toppings.push({ name, price });
+            } else {
+                item.toppings = item.toppings.filter(t => t.name !== name);
+            }
+            renderOrder();
+        }
+
+        function closeToppingModal() {
+            document.getElementById('topping-modal').classList.remove('open');
+        }
+
+        function renderOrder() {
+            saveCartToStorage();
+            const list = document.getElementById('order-list');
+            let total = 0;
+            let totalQty = 0;
+            
+            list.innerHTML = currentOrder.map((item, index) => {
+                let singleToppingPrice = item.toppings.reduce((sum, t) => sum + t.price, 0);
+                let totalItemPrice = (item.price + singleToppingPrice) * item.qty;
+                
+                total += totalItemPrice;
+                totalQty += item.qty;
+
+                let toppingStr = "";
+                if (item.toppings.length > 0) {
+                    let namesWithPrice = item.toppings.map(t => `${t.name} (+${(t.price/1000)}k)`).join(', ');
+                    toppingStr = `<div class="topping-line">Kèm: <span class="topping-bold-text">${namesWithPrice}</span></div>`;
+                }
+
+                let userTagStr = "";
+                if (item.userTag) {
+                    userTagStr = `<div class="user-tag-line">Người đặt: <span class="user-tag-name">${item.userTag}</span></div>`;
+                }
+
+                return `
+                    <div class="order-item">
+                        <div class="item-main-row">
+                            <div class="item-info">
+                                <b class="item-name-title">${item.name}</b>
+                                
+                                <div class="action-buttons-row">
+                                    <button class="btn-add-top" onclick="openToppingModal(${index})">+ Topping</button>
+                                    <button class="btn-user-tag" onclick="updateUserTag(${index})">Người đặt</button>
+                                </div>
+
+                                <div class="sub-info-row">
+                                    <small>${item.price.toLocaleString()}đ</small>
+                                    <input type="text" class="note-input" placeholder="(ghi chú...)" value="${item.note}" oninput="updateNote(${index}, this.value)">
+                                </div>
+                                ${userTagStr}
+                                ${toppingStr}
+                            </div>
+                            <div class="qty-controls">
+                                <button class="btn-qty" onclick="updateQty(${index}, -1)">-</button>
+                                <span style="font-weight:bold; font-size:15px; min-width:14px; text-align:center;">${item.qty}</span>
+                                <button class="btn-qty" onclick="updateQty(${index}, 1)">+</button>
+                            </div>
+                            <!-- Khung chứa tổng tiền món (Vẫn hiển thị trong giỏ hàng) -->
+                            <div class="item-total-price-box"><strong>${totalItemPrice.toLocaleString()}</strong></div>
+                        </div>
+                    </div>`;
+            }).join('');
+            
+            document.getElementById('total-price').innerText = total.toLocaleString() + 'đ';
+            document.getElementById('cart-badge').innerText = totalQty;
+        }
+
+        async function downloadFullBill() {
+            if (currentOrder.length === 0) { alert("Bill trống!"); return; }
+            
+            const list = document.getElementById('order-list').cloneNode(true);
+            
+            const offscreenBill = document.createElement('div');
+            offscreenBill.style.width = "360px";
+            offscreenBill.style.background = "white";
+            offscreenBill.style.padding = "15px";
+            offscreenBill.style.position = "absolute";
+            offscreenBill.style.top = "-9999px";
+            
+            list.querySelectorAll('.order-item').forEach(itemDiv => {
+                itemDiv.style.padding = "8px 0"; 
+
+                // --- 1. Xóa giá tổng của từng món ---
+                const totalPriceBox = itemDiv.querySelector('.item-total-price-box');
+                if (totalPriceBox) totalPriceBox.remove();
+
+                // --- 2. Xóa đơn giá của món ---
+                const subInfo = itemDiv.querySelector('.sub-info-row');
+                if (subInfo) {
+                    const priceSmall = subInfo.querySelector('small');
+                    if (priceSmall) priceSmall.remove();
+                }
+
+                // --- 3. Xóa giá tiền hiển thị ở phần topping ---
+                const toppingLine = itemDiv.querySelector('.topping-line');
+                if (toppingLine) {
+                    const boldText = toppingLine.querySelector('.topping-bold-text');
+                    if (boldText) {
+                        // Xóa các cụm chữ dạng (+6k), (+10k) ra khỏi tên topping
+                        let text = boldText.innerText;
+                        text = text.replace(/\s*\(\+[0-9.]+k\)/g, '');
+                        boldText.innerText = text;
+                    }
+                }
+
+                // --- Định dạng lại UI bill ---
+                const ctrl = itemDiv.querySelector('.qty-controls');
+                if(ctrl) {
+                    const span = ctrl.querySelector('span').innerText;
+                    ctrl.innerHTML = `x${span}`;
+                    ctrl.style.color = "#333";
+                    ctrl.style.fontWeight = "bold";
+                    ctrl.style.fontSize = "16px";
+                }
+                
+                const btnTop = itemDiv.querySelector('.btn-add-top');
+                if (btnTop) btnTop.remove();
+                
+                const btnUser = itemDiv.querySelector('.btn-user-tag');
+                if (btnUser) btnUser.remove();
+
+                const actionRow = itemDiv.querySelector('.action-buttons-row');
+                if (actionRow) actionRow.remove();
+
+                const input = itemDiv.querySelector('.note-input');
+                const itemInfo = itemDiv.querySelector('.item-info');
+                if(input && itemInfo) {
+                    const noteText = input.value.trim();
+                    if(noteText) {
+                        const divNote = document.createElement('div');
+                        divNote.className = "note-display-line";
+                        divNote.innerText = `Ghi chú: ${noteText}`;
+                        itemInfo.appendChild(divNote);
+                    }
+                    input.remove();
+                }
+                
+                if(subInfo && !itemDiv.querySelector('.note-display-line')) {
+                    subInfo.style.marginTop = "0px";
+                }
+            });
+
+            // --- 4. Tạo footer nhưng KHÔNG IN TỔNG TIỀN ---
+            const footer = document.createElement('div');
+            footer.innerHTML = `
+                <div style="display:flex; justify-content:center; padding: 10px 0; font-size: 14px; font-style:italic; border-top: 1px dashed #ccc; margin-top:10px; color:#666;">
+                    <span>(Đơn hàng)</span>
+                </div>
+            `;
+
+            offscreenBill.appendChild(list);
+            offscreenBill.appendChild(footer);
+            document.body.appendChild(offscreenBill);
+
+            try {
+                const canvas = await html2canvas(offscreenBill, { scale: 2, useCORS: true });
+                const link = document.createElement('a');
+                link.download = `Bill_${Date.now()}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            } catch (err) {
+                alert("Lỗi chụp ảnh: " + err);
+            } finally {
+                document.body.removeChild(offscreenBill);
+            }
+        }
+
+        function clearAll() { 
+            if(confirm("Xóa toàn bộ đơn hiện tại?")) { 
+                currentOrder = []; 
+                renderOrder(); 
+                toggleBillModal(false); 
+            } 
+        }
+
+        renderCategorizedMenu(); 
+        renderOrder();
+    </script>
+</body>
+</html>
