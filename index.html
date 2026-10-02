@@ -258,7 +258,6 @@
     .paid-checkbox-label.unpaid { color: #94a3b8; border: 1px solid #cbd5e1; background: #fff; }
 
     .sub-info-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-    /* Trả lại đơn giá thành chữ tĩnh, xám nhạt như cũ */
     .static-price { font-size: 12px; color: #64748b; font-weight: 500; }
 
     .note-input { border: none; border-bottom: 1px dashed #e67e22; padding: 2px 4px; font-size: 12px; outline: none; background: transparent; color: #e67e22; width: 110px; font-style: italic; }
@@ -273,13 +272,12 @@
     .qty-controls { display: flex; align-items: center; gap: 8px; margin: 0 4px; flex-shrink: 0; }
     .btn-qty { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #cbd5e1; background: #fff; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     
-    /* CSS Nút Tổng giá (Sửa giá) */
     .item-total-price-box { 
         width: 75px; 
         text-align: right; 
         font-size: 14px; 
         font-weight: bold; 
-        color: #0984e3; /* Đổi màu xanh cho nổi */
+        color: #0984e3; 
         padding: 4px 6px; 
         cursor: pointer;
         border-radius: 6px;
@@ -299,6 +297,29 @@
     .topping-option-row { display: flex; justify-content: space-between; padding: 14px 5px; border-bottom: 1px solid #edf2f7; font-size: 16px; }
     .topping-option-row label { display: flex; align-items: center; gap: 10px; width: 100%; cursor: pointer; }
     .topping-option-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); }
+
+    /* Nút tick in giá */
+    .toggle-price-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        cursor: pointer;
+    }
+    .toggle-price-container label {
+        font-size: 13px;
+        font-weight: bold;
+        color: #475569;
+        cursor: pointer;
+        user-select: none;
+    }
+    .toggle-price-container input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+        cursor: pointer;
+    }
 
     @media (min-width: 768px) {
         .modal-overlay { align-items: center; }
@@ -343,6 +364,13 @@
                     <span>TỔNG:</span>
                     <span id="total-price" style="color:var(--accent)">0đ</span>
                 </div>
+                
+                <!-- NÚT GẠT BẬT TẮT IN GIÁ -->
+                <div class="toggle-price-container">
+                    <label for="toggle-print-price">Hiện giá trên Bill</label>
+                    <input type="checkbox" id="toggle-print-price">
+                </div>
+
                 <div class="btn-group">
                     <button class="btn-clear" onclick="clearAll()">XÓA HẾT</button>
                     <button class="btn-download" onclick="downloadFullBill()">TẢI ẢNH BILL</button>
@@ -525,7 +553,6 @@
             saveCartToStorage();
         }
 
-        // --- SỬA GIÁ TIỀN: Bấm vào TỔNG, Sửa ĐƠN GIÁ GỐC ---
         function editItemPrice(index) {
             const currentPrice = currentOrder[index].price;
             let newPriceInput = prompt(`Nhập ĐƠN GIÁ mới cho "${currentOrder[index].name}" (Có thể nhập số như 30000 hoặc 30k):`, currentPrice);
@@ -541,9 +568,9 @@
                 
                 const parsedPrice = parseInt(newPriceInput.replace(/[^0-9]/g, ''));
                 if (!isNaN(parsedPrice)) {
-                    currentOrder[index].price = parsedPrice * multiplier; // Lưu lại đơn giá mới
+                    currentOrder[index].price = parsedPrice * multiplier; 
                     saveCartToStorage();
-                    renderOrder(); // Sẽ tự động tính lại Tổng = Đơn giá mới * Số lượng
+                    renderOrder(); 
                 }
             }
         }
@@ -641,7 +668,6 @@
                                 </div>
 
                                 <div class="sub-info-row">
-                                    <!-- HIỂN THỊ LẠI ĐƠN GIÁ TĨNH XÁM NHẠT -->
                                     <span class="static-price">${item.price.toLocaleString()}đ</span>
                                     <input type="text" class="note-input" placeholder="(ghi chú...)" value="${item.note}" oninput="updateNote(${index}, this.value)">
                                 </div>
@@ -653,7 +679,6 @@
                                 <span style="font-weight:bold; font-size:15px; min-width:14px; text-align:center;">${item.qty}</span>
                                 <button class="btn-qty" onclick="updateQty(${index}, 1)">+</button>
                             </div>
-                            <!-- BIẾN CỘT TỔNG TIỀN BÊN PHẢI THÀNH NÚT SỬA GIÁ -->
                             <div class="item-total-price-box" onclick="editItemPrice(${index})" title="Bấm để sửa đơn giá món này">
                                 ${totalItemPrice.toLocaleString()} ✎
                             </div>
@@ -668,6 +693,10 @@
         async function downloadFullBill() {
             if (currentOrder.length === 0) { alert("Bill trống!"); return; }
             
+            // Đọc trạng thái checkbox in giá
+            const isPrintPrice = document.getElementById('toggle-print-price').checked;
+            const totalVal = document.getElementById('total-price').innerText;
+
             const list = document.getElementById('order-list').cloneNode(true);
             
             const offscreenBill = document.createElement('div');
@@ -680,27 +709,36 @@
             list.querySelectorAll('.order-item').forEach(itemDiv => {
                 itemDiv.style.padding = "8px 0"; 
 
-                // XÓA NÚT TỔNG GIÁ KHI XUẤT BILL
                 const totalPriceBox = itemDiv.querySelector('.item-total-price-box');
-                if (totalPriceBox) totalPriceBox.remove();
-
-                // XÓA ĐƠN GIÁ TĨNH KHI XUẤT BILL
                 const subInfo = itemDiv.querySelector('.sub-info-row');
-                if (subInfo) {
-                    const staticPrice = subInfo.querySelector('.static-price');
-                    if (staticPrice) staticPrice.remove();
-                }
-
                 const toppingLine = itemDiv.querySelector('.topping-line');
-                if (toppingLine) {
-                    const boldText = toppingLine.querySelector('.topping-bold-text');
-                    if (boldText) {
-                        let text = boldText.innerText;
-                        text = text.replace(/\s*\(\+[0-9.]+k\)/g, '');
-                        boldText.innerText = text;
+
+                if (!isPrintPrice) {
+                    // --- ẨN GIÁ TRÊN BILL ---
+                    if (totalPriceBox) totalPriceBox.remove();
+                    if (subInfo) {
+                        const staticPrice = subInfo.querySelector('.static-price');
+                        if (staticPrice) staticPrice.remove();
+                    }
+                    if (toppingLine) {
+                        const boldText = toppingLine.querySelector('.topping-bold-text');
+                        if (boldText) {
+                            let text = boldText.innerText;
+                            text = text.replace(/\s*\(\+[0-9.]+k\)/g, '');
+                            boldText.innerText = text;
+                        }
+                    }
+                } else {
+                    // --- HIỆN GIÁ TRÊN BILL ---
+                    // Giữ lại giá nhưng xóa ký hiệu cái bút "✎" và nền xám cho đẹp
+                    if (totalPriceBox) {
+                        totalPriceBox.innerText = totalPriceBox.innerText.replace('✎', '').trim();
+                        totalPriceBox.style.background = 'transparent';
+                        totalPriceBox.style.color = '#1e293b';
                     }
                 }
 
+                // Chỉnh sửa phần số lượng
                 const ctrl = itemDiv.querySelector('.qty-controls');
                 if(ctrl) {
                     const span = ctrl.querySelector('span').innerText;
@@ -710,6 +748,7 @@
                     ctrl.style.fontSize = "16px";
                 }
                 
+                // Luôn xóa các nút bấm tương tác khỏi ảnh
                 const actionRow = itemDiv.querySelector('.action-buttons-row');
                 if (actionRow) actionRow.remove();
 
@@ -732,11 +771,22 @@
             });
 
             const footer = document.createElement('div');
-            footer.innerHTML = `
-                <div style="display:flex; justify-content:center; padding: 10px 0; font-size: 14px; font-style:italic; border-top: 1px dashed #ccc; margin-top:10px; color:#666;">
-                    <span>(Đơn hàng)</span>
-                </div>
-            `;
+            
+            // Hiển thị Footer TỔNG CỘNG nếu chọn in giá
+            if (isPrintPrice) {
+                footer.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; padding: 10px 0; font-size: 18px; font-weight:bold; border-top: 2px dashed #ccc; margin-top:10px; color:#333;">
+                        <span>TỔNG CỘNG:</span>
+                        <span style="color:#e67e22">${totalVal}</span>
+                    </div>
+                `;
+            } else {
+                footer.innerHTML = `
+                    <div style="display:flex; justify-content:center; padding: 10px 0; font-size: 14px; font-style:italic; border-top: 1px dashed #ccc; margin-top:10px; color:#666;">
+                        <span>(Đơn hàng)</span>
+                    </div>
+                `;
+            }
 
             offscreenBill.appendChild(list);
             offscreenBill.appendChild(footer);
