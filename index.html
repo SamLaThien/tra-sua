@@ -257,21 +257,10 @@
     .paid-checkbox-label.paid { color: #27ae60; border: 1px solid #27ae60; background: #e8f8f5; }
     .paid-checkbox-label.unpaid { color: #94a3b8; border: 1px solid #cbd5e1; background: #fff; }
 
-    /* CSS cho nút Sửa giá (Nằm thay thế hiển thị giá cũ) */
-    .edit-price-btn {
-        font-size: 11px;
-        color: #fff;
-        background: #0984e3;
-        padding: 3px 8px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        display: inline-block;
-        box-shadow: 0 2px 4px rgba(9, 132, 227, 0.2);
-    }
-    .edit-price-btn:active { transform: scale(0.95); }
-
     .sub-info-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    /* Trả lại đơn giá thành chữ tĩnh, xám nhạt như cũ */
+    .static-price { font-size: 12px; color: #64748b; font-weight: 500; }
+
     .note-input { border: none; border-bottom: 1px dashed #e67e22; padding: 2px 4px; font-size: 12px; outline: none; background: transparent; color: #e67e22; width: 110px; font-style: italic; }
     .note-input::placeholder { color: #cbd5e1; font-style: normal; }
     
@@ -283,7 +272,22 @@
 
     .qty-controls { display: flex; align-items: center; gap: 8px; margin: 0 4px; flex-shrink: 0; }
     .btn-qty { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #cbd5e1; background: #fff; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .item-total-price-box { width: 70px; text-align: right; font-size: 14px; font-weight: bold; color: #1e293b; padding-top: 3px; }
+    
+    /* CSS Nút Tổng giá (Sửa giá) */
+    .item-total-price-box { 
+        width: 75px; 
+        text-align: right; 
+        font-size: 14px; 
+        font-weight: bold; 
+        color: #0984e3; /* Đổi màu xanh cho nổi */
+        padding: 4px 6px; 
+        cursor: pointer;
+        border-radius: 6px;
+        background: #f1f5f9;
+        transition: 0.1s;
+    }
+    .item-total-price-box:hover { background: #e2e8f0; }
+    .item-total-price-box:active { transform: scale(0.95); }
 
     .total-area { padding: 14px 16px; border-top: 2px solid #f1f5f9; background: #fafafa; flex-shrink: 0; }
     .total-row { display: flex; justify-content: space-between; font-size: 19px; font-weight: bold; margin-bottom: 12px; }
@@ -405,7 +409,7 @@
           ],
           "TRÀ TRÁI CÂY (SIZE 1 LÍT)": [
             {name: "Trà trái cây", price: 28000},
-            {name: "Trà mãng cầu", price: 30000}, // <--- Đã sửa lên 30k
+            {name: "Trà mãng cầu", price: 30000},
             {name: "Trà thơm đặc", price: 28000},
             {name: "Trà dưa lưới", price: 28000},
             {name: "Trà dâu tằm", price: 28000},
@@ -455,8 +459,8 @@
         };
 
         const toppingMenu = [
-            {name: "Thêm bánh flan", price: 5000}, // <--- Cập nhật tên và giá
-            {name: "Thêm đác", price: 5000},        // <--- Thêm topping đác
+            {name: "Thêm bánh flan", price: 5000}, 
+            {name: "Thêm đác", price: 5000},        
             {name: "Thêm Machiato", price: 10000}
         ];
 
@@ -521,10 +525,10 @@
             saveCartToStorage();
         }
 
-        // --- HÀM MỚI: SỬA GIÁ TIỀN CHO TỪNG MÓN ---
+        // --- SỬA GIÁ TIỀN: Bấm vào TỔNG, Sửa ĐƠN GIÁ GỐC ---
         function editItemPrice(index) {
             const currentPrice = currentOrder[index].price;
-            let newPriceInput = prompt(`Nhập giá mới cho "${currentOrder[index].name}" (Có thể nhập số như 30000 hoặc 30k):`, currentPrice);
+            let newPriceInput = prompt(`Nhập ĐƠN GIÁ mới cho "${currentOrder[index].name}" (Có thể nhập số như 30000 hoặc 30k):`, currentPrice);
             
             if (newPriceInput !== null) {
                 newPriceInput = newPriceInput.trim().toLowerCase();
@@ -537,9 +541,9 @@
                 
                 const parsedPrice = parseInt(newPriceInput.replace(/[^0-9]/g, ''));
                 if (!isNaN(parsedPrice)) {
-                    currentOrder[index].price = parsedPrice * multiplier;
+                    currentOrder[index].price = parsedPrice * multiplier; // Lưu lại đơn giá mới
                     saveCartToStorage();
-                    renderOrder();
+                    renderOrder(); // Sẽ tự động tính lại Tổng = Đơn giá mới * Số lượng
                 }
             }
         }
@@ -637,10 +641,8 @@
                                 </div>
 
                                 <div class="sub-info-row">
-                                    <!-- Nút Sửa Giá Hiển Thị Tại Đây -->
-                                    <span class="edit-price-btn" onclick="editItemPrice(${index})" title="Nhấn để sửa giá cho món này">
-                                        ${item.price.toLocaleString()}đ ✎
-                                    </span>
+                                    <!-- HIỂN THỊ LẠI ĐƠN GIÁ TĨNH XÁM NHẠT -->
+                                    <span class="static-price">${item.price.toLocaleString()}đ</span>
                                     <input type="text" class="note-input" placeholder="(ghi chú...)" value="${item.note}" oninput="updateNote(${index}, this.value)">
                                 </div>
                                 ${userTagStr}
@@ -651,7 +653,10 @@
                                 <span style="font-weight:bold; font-size:15px; min-width:14px; text-align:center;">${item.qty}</span>
                                 <button class="btn-qty" onclick="updateQty(${index}, 1)">+</button>
                             </div>
-                            <div class="item-total-price-box"><strong>${totalItemPrice.toLocaleString()}</strong></div>
+                            <!-- BIẾN CỘT TỔNG TIỀN BÊN PHẢI THÀNH NÚT SỬA GIÁ -->
+                            <div class="item-total-price-box" onclick="editItemPrice(${index})" title="Bấm để sửa đơn giá món này">
+                                ${totalItemPrice.toLocaleString()} ✎
+                            </div>
                         </div>
                     </div>`;
             }).join('');
@@ -675,14 +680,15 @@
             list.querySelectorAll('.order-item').forEach(itemDiv => {
                 itemDiv.style.padding = "8px 0"; 
 
+                // XÓA NÚT TỔNG GIÁ KHI XUẤT BILL
                 const totalPriceBox = itemDiv.querySelector('.item-total-price-box');
                 if (totalPriceBox) totalPriceBox.remove();
 
+                // XÓA ĐƠN GIÁ TĨNH KHI XUẤT BILL
                 const subInfo = itemDiv.querySelector('.sub-info-row');
                 if (subInfo) {
-                    // Xóa nút bấm Sửa Giá
-                    const priceBtn = subInfo.querySelector('.edit-price-btn');
-                    if (priceBtn) priceBtn.remove();
+                    const staticPrice = subInfo.querySelector('.static-price');
+                    if (staticPrice) staticPrice.remove();
                 }
 
                 const toppingLine = itemDiv.querySelector('.topping-line');
