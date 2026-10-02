@@ -10,7 +10,7 @@
     :root { 
         --primary: #4CAF50; 
         --accent: #e67e22; 
-        --bg: #f0f2f5; /* Nền xám nhạt thay cho ảnh */
+        --bg: #f4f7f6; /* Nền sáng, dịu mắt hơn */
         --text: #2d3436;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -22,7 +22,7 @@
 
     body { 
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-        background-color: var(--bg); /* BỎ ẢNH NỀN CHUYỂN SANG MÀU ĐƠN SẮC */
+        background-color: var(--bg);
         color: var(--text);
         height: auto !important;
         min-height: 100vh;
@@ -60,8 +60,6 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    /* ĐÃ XÓA CSS menu-image-container */
-
     .menu-scroll-container {
         flex-grow: 1;
         overflow-y: visible;
@@ -71,70 +69,94 @@
     .items-grid { 
         display: grid; 
         grid-template-columns: repeat(2, 1fr); 
-        gap: 12px; 
+        gap: 14px; /* Tăng khoảng cách các món lên một chút cho thoáng */
     }
 
+    /* TIÊU ĐỀ DANH MỤC LÀM ĐẸP HƠN */
     .category-group-title {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 800;
         color: #fff;
-        background: #2d3436 !important; /* Dùng màu đậm thay vì làm mờ */
-        padding: 8px 16px;
-        margin: 20px 0 10px 0;
-        border-radius: 20px;
+        background: linear-gradient(135deg, #2d3436, #636e72) !important; 
+        padding: 8px 18px;
+        margin: 24px 0 12px 0;
+        border-radius: 25px;
         display: inline-block;
         text-transform: uppercase;
         letter-spacing: 1px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
     .category-group:first-child .category-group-title { margin-top: 0; }
 
+    /* --- GIAO DIỆN Ô MÓN ĂN MỚI --- */
     .item-card { 
-        background: #ffffff !important; /* Nền thẻ trắng tinh */
-        padding: 16px 10px; 
-        border-radius: 10px; 
+        background: #ffffff !important; 
+        padding: 18px 12px; 
+        border-radius: 16px; 
         text-align: center; 
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Chỉnh bóng cho đẹp */
-        transition: transform 0.15s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
+        transition: all 0.25s ease;
         cursor: pointer;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         align-items: center;
-        border: 1px solid #e2e8f0;
+        border: 1px solid #f1f5f9;
+        position: relative;
+        overflow: hidden;
     }
     
+    /* Vạch màu gradient mỏng ở mép trên thẻ */
+    .item-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #10b981, #3b82f6); 
+        opacity: 0.8;
+    }
+
+    /* Hiệu ứng khi bấm hoặc hover */
+    .item-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+        border-color: #e2e8f0;
+    }
     .item-card:active { 
-        transform: scale(0.95); 
-        background: #f8fafc !important; 
+        transform: scale(0.96); 
     }
     
+    /* Tên món ăn sang trọng, rõ ràng */
     .item-card h4 { 
-        font-size: 14px; 
-        font-weight: 800;
-        min-height: 36px;
-        margin-bottom: 12px; 
-        color: #ffffff; 
-        background: #334155; /* Nền nhãn xám đậm */
-        padding: 8px 6px;
-        border-radius: 10px; 
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); 
+        font-size: 14.5px; 
+        font-weight: 700;
+        min-height: 42px;
+        margin-top: 6px;
+        margin-bottom: 14px; 
+        color: #1e293b; 
+        background: transparent; 
+        padding: 0;
+        box-shadow: none;
         display: -webkit-box; 
         -webkit-line-clamp: 2; 
         -webkit-box-orient: vertical; 
         width: 100%; 
+        line-height: 1.45;
     }
 
+    /* Giá tiền dạng viên thuốc Gradient nổi bật */
     .item-card b { 
-        color: #d35400; 
+        color: #ffffff; 
         font-size: 14px; 
-        font-weight: 900;
-        background: #fff3e0; 
-        padding: 4px 12px;
-        border-radius: 12px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Gradient cam đào */
+        padding: 6px 16px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(255, 126, 95, 0.35); /* Bóng tỏa màu cam sáng */
+        letter-spacing: 0.5px;
     }
+    /* --- KẾT THÚC GIAO DIỆN MÓN ĂN MỚI --- */
 
-    /* FLOATING CART BUTTON */
     .cart-fab {
         position: fixed;
         bottom: 20px;
@@ -169,7 +191,6 @@
         border: 2px solid #fff;
     }
 
-    /* MODAL OVERLAY */
     .modal-overlay {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
@@ -224,9 +245,25 @@
     
     .item-name-title { font-size: 14px; font-weight: bold; color: #1e293b; display: block; margin-bottom: 3px; word-break: break-word; }
 
-    .action-buttons-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+    .action-buttons-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; flex-wrap: wrap; }
     .btn-add-top { background: #3498db; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
     .btn-user-tag { background: #e67e22; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
+    
+    /* CSS cho nút Đánh dấu đã thu tiền */
+    .paid-checkbox-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 3px 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+        user-select: none;
+    }
+    .paid-checkbox-label.paid { color: #27ae60; border: 1px solid #27ae60; background: #e8f8f5; }
+    .paid-checkbox-label.unpaid { color: #94a3b8; border: 1px solid #cbd5e1; background: #fff; }
 
     .sub-info-row { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
     .sub-info-row small { font-size: 12px; color: #64748b; font-weight: 500; }
@@ -271,8 +308,6 @@
             <button class="btn-add-custom" onclick="addCustomItem()">+ MÓN NGOÀI</button>
         </div>
         
-        <!-- ĐÃ XÓA div chứa ảnh menu ở đây -->
-
         <div class="menu-scroll-container" id="menu-scroll-view"></div>
     </div>
 
@@ -283,7 +318,6 @@
         <div class="cart-badge" id="cart-badge">0</div>
     </button>
 
-    <!-- MODAL GIỎ HÀNG -->
     <div class="modal-overlay" id="bill-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -296,7 +330,6 @@
             </div>
 
             <div class="total-area">
-                <!-- GIÁ TRỊ TỔNG TIỀN NÀY CHỈ HIỂN THỊ TRONG APP -->
                 <div class="total-row">
                     <span>TỔNG:</span>
                     <span id="total-price" style="color:var(--accent)">0đ</span>
@@ -309,7 +342,6 @@
         </div>
     </div>
 
-    <!-- MODAL TOPPING -->
     <div class="modal-overlay" id="topping-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -325,98 +357,97 @@
 
     <script>
         const menuData = {
-      "TRÀ SỮA SỐT MÔN": [
-        {name: "Trà sữa khoai môn", price: 20000},
-        {name: "Khoai môn sốt môn", price: 35000},
-        {name: "Sữa tươi trân châu đường đen (700ml)", price: 25000},
-        {name: "Olong sốt môn", price: 30000},
-        {name: "Sữa tươi sốt môn (700ml)", price: 30000},
-        {name: "Gạo rang sốt môn", price: 35000}
-      ],
-      "TRÀ SỮA ĐẬM TRÀ": [
-        {name: "Trà sữa Olong", price: 25000},
-        {name: "Trà sữa gạo rang", price: 30000},
-        {name: "Trà sữa matcha đặc biệt", price: 30000},
-        {name: "Trà sữa cacao đặc biệt", price: 30000}
-      ],
-      "TRÀ SỮA THÁI LAN": [
-        {name: "Thái đỏ", price: 20000},
-        {name: "Thái xanh", price: 20000}
-      ],
-      "TRÀ SỮA CÁC VỊ": [
-        {name: "Trà sữa truyền thống", price: 20000},
-        {name: "Trà sữa socola", price: 25000},
-        {name: "Trà sữa matcha", price: 25000},
-        {name: "Trà sữa mix các vị", price: 25000},
-        {name: "Trà sữa nướng", price: 30000}
-      ],
-      "ĐÁ XAY": [
-        {name: "Matcha đá xay (500ml)", price: 27000},
-        {name: "Matcha đá xay (700ml)", price: 35000},
-        {name: "Cacao đá xay (500ml)", price: 27000},
-        {name: "Cacao đá xay (700ml)", price: 35000}
-      ],
-      "MỚI (SIZE 1 LÍT)": [
-        {name: "Sâm long nhãn", price: 30000},
-        {name: "Sâm long nhãn hạt sen", price: 35000},
-        {name: "Lục trà long nhãn", price: 30000},
-        {name: "Lục trà sen long nhãn", price: 35000},
-        {name: "Trà sữa Olong nhãn (700ml)", price: 30000},
-        {name: "Trà sữa Olong nhãn (1 Lít)", price: 35000},
-        {name: "Trà sữa Olong nhãn sen (700ml)", price: 30000},
-        {name: "Trà sữa Olong nhãn sen (1 Lít)", price: 35000}
-      ],
-      "TRÀ TRÁI CÂY (SIZE 1 LÍT)": [
-        {name: "Trà dâu tươi", price: 25000},
-        {name: "Trà trái cây", price: 28000},
-        {name: "Trà dưa lưới", price: 25000},
-        {name: "Trà dâu tằm", price: 25000},
-        {name: "Trà vải", price: 25000},
-        {name: "Trà mãng cầu", price: 25000},
-        {name: "Trà thơm", price: 25000},
-        {name: "Trà kiwi", price: 25000},
-        {name: "Trà ổi hồng", price: 25000},
-        {name: "Trà việt quất đặc", price: 25000},
-        {name: "Trà nho đặc", price: 25000},
-        {name: "Trà chanh dây đặc rim", price: 25000},
-        {name: "Trà xoài", price: 25000},
-        {name: "Trà đào", price: 25000}
-      ],
-      "LATTE": [
-        {name: "Matcha Latte (700ml)", price: 25000},
-        {name: "Matcha Latte (1 Lít)", price: 30000},
-        {name: "Cacao Latte (700ml)", price: 25000},
-        {name: "Cacao Latte (1 Lít)", price: 30000},
-        {name: "Khoai Môn Latte (700ml)", price: 25000},
-        {name: "Khoai Môn Latte (1 Lít)", price: 30000},
-        {name: "Matcha việt quất", price: 25000},
-        {name: "Xoài matcha", price: 25000}
-      ],
-      "SINH TỐ": [
-        {name: "Sinh tố đào", price: 25000},
-        {name: "Sinh tố dâu", price: 30000},
-        {name: "Sinh tố mãng cầu", price: 25000},
-        {name: "Sinh tố vải", price: 25000},
-        {name: "Sinh tố nho", price: 25000},
-        {name: "Sinh tố việt quất", price: 25000},
-        {name: "Sinh tố dưa lưới", price: 25000},
-        {name: "Sinh tố kiwi", price: 25000}
-      ],
-      "YAOURT (SIZE 700ML)": [
-        {name: "Yaourt chanh dây", price: 25000},
-        {name: "Yaourt trái cây", price: 30000},
-        {name: "Yaourt việt quất", price: 25000},
-        {name: "Yaourt dâu", price: 25000},
-        {name: "Yaourt đào", price: 25000},
-        {name: "Yaourt vải", price: 25000},
-        {name: "Yaourt xoài", price: 25000},
-        {name: "Yaourt kiwi", price: 25000},
-        {name: "Yaourt ổi", price: 25000},
-        {name: "Yaourt thơm", price: 25000},
-        {name: "Yaourt nho", price: 25000},
-        {name: "Yaourt dưa lưới", price: 25000}
-      ]
-    };
+          "TRÀ SỮA SỐT MÔN": [
+            {name: "Trà sữa sốt khoai môn", price: 33000},
+            {name: "Olong sốt môn", price: 33000},
+            {name: "Gạo rang sốt môn", price: 33000},
+            {name: "Khoai môn sốt môn", price: 33000},
+            {name: "Sữa tươi trân châu đường đen (500ml)", price: 20000},
+            {name: "Sữa tươi trân châu đường đen (700ml)", price: 25000},
+            {name: "Sữa tươi kem mặn (700ml)", price: 30000}
+          ],
+          "TRÀ SỮA THÁI LAN": [
+            {name: "Thái xanh", price: 28000},
+            {name: "Thái đỏ", price: 30000}
+          ],
+          "TRÀ SỮA ĐẬM TRÀ": [
+            {name: "Trà sữa Olong", price: 30000},
+            {name: "Trà sữa Gạo Rang", price: 30000},
+            {name: "Trà sữa Matcha Đặc Biệt", price: 30000},
+            {name: "Trà sữa Cacao Đặc Biệt", price: 30000}
+          ],
+          "TRÀ SỮA MIX VỊ": [
+            {name: "Trà sữa truyền thống", price: 25000},
+            {name: "Trà sữa socola", price: 25000},
+            {name: "Trà sữa matcha", price: 25000},
+            {name: "Trà sữa mix các vị", price: 25000},
+            {name: "Trà sữa khoai môn", price: 28000},
+            {name: "Trà sữa nướng", price: 30000}
+          ],
+          "ĐÁ XAY": [
+            {name: "Matcha đá xay (500ml)", price: 27000},
+            {name: "Matcha đá xay (700ml)", price: 33000},
+            {name: "Cacao đá xay (500ml)", price: 27000},
+            {name: "Cacao đá xay (700ml)", price: 33000}
+          ],
+          "MỚI (SIZE 1 LÍT)": [
+            {name: "Sâm long nhãn", price: 30000},
+            {name: "Sâm long nhãn hạt sen", price: 35000},
+            {name: "Lục trà long nhãn", price: 30000},
+            {name: "Lục trà sen long nhãn", price: 35000},
+            {name: "Trà sữa Olong nhãn (700ml)", price: 30000},
+            {name: "Trà sữa Olong nhãn sen (700ml)", price: 35000}
+          ],
+          "TRÀ TRÁI CÂY (SIZE 1 LÍT)": [
+            {name: "Trà trái cây", price: 28000},
+            {name: "Trà mãng cầu", price: 28000},
+            {name: "Trà thơm đặc", price: 28000},
+            {name: "Trà dưa lưới", price: 28000},
+            {name: "Trà dâu tằm", price: 28000},
+            {name: "Trà dâu tươi", price: 25000},
+            {name: "Trà vải", price: 25000},
+            {name: "Trà ổi hồng", price: 25000},
+            {name: "Trà kiwi", price: 25000},
+            {name: "Trà việt quất đặc", price: 25000},
+            {name: "Trà nho đặc", price: 25000},
+            {name: "Trà chanh dây đặc rim", price: 25000},
+            {name: "Trà xoài", price: 25000},
+            {name: "Trà đào", price: 25000}
+          ],
+          "LATTE": [
+            {name: "Matcha Latte (700ml)", price: 25000},
+            {name: "Matcha Latte (1 Lít)", price: 30000},
+            {name: "Cacao Latte (700ml)", price: 25000},
+            {name: "Khoai môn Latte (700ml)", price: 25000},
+            {name: "Matcha Dâu", price: 25000},
+            {name: "Matcha Việt Quất", price: 25000},
+            {name: "Xoài Matcha", price: 25000}
+          ],
+          "SINH TỐ": [
+            {name: "Sinh tố dâu", price: 30000},
+            {name: "Sinh tố mãng cầu", price: 28000},
+            {name: "Sinh tố nho", price: 25000},
+            {name: "Sinh tố dưa lưới", price: 25000},
+            {name: "Sinh tố đào", price: 25000},
+            {name: "Sinh tố vải", price: 25000},
+            {name: "Sinh tố việt quất", price: 25000},
+            {name: "Sinh tố kiwi", price: 25000}
+          ],
+          "YAOURT SIZE 700ML": [
+            {name: "Yaourt trái cây", price: 30000},
+            {name: "Yaourt việt quất", price: 25000},
+            {name: "Yaourt dâu", price: 25000},
+            {name: "Yaourt xoài", price: 25000},
+            {name: "Yaourt chanh dây", price: 25000},
+            {name: "Yaourt đào", price: 25000},
+            {name: "Yaourt vải", price: 25000},
+            {name: "Yaourt kiwi", price: 25000},
+            {name: "Yaourt ổi", price: 25000},
+            {name: "Yaourt thơm", price: 25000},
+            {name: "Yaourt nho", price: 25000},
+            {name: "Yaourt dưa lưới", price: 25000}
+          ]
+        };
 
         const toppingMenu = [
             {name: "Thêm Flan", price: 6000},
@@ -467,7 +498,7 @@
         }
 
         function addToOrder(name, price) {
-            currentOrder.push({ name, price, qty: 1, note: "", toppings: [], userTag: "" });
+            currentOrder.push({ name, price, qty: 1, note: "", toppings: [], userTag: "", isPaid: false });
             renderOrder();
         }
 
@@ -485,12 +516,18 @@
         }
 
         function updateUserTag(index) {
-            const currentUser = currentOrder[index].userTag;
+            const currentUser = currentOrder[index].userTag || "";
             const user = prompt("Nhập tên người đặt món này:", currentUser);
             if (user !== null) {
                 currentOrder[index].userTag = user.trim();
                 renderOrder();
             }
+        }
+        
+        function toggleItemPaid(index, checked) {
+            currentOrder[index].isPaid = checked;
+            saveCartToStorage();
+            renderOrder();
         }
 
         function openToppingModal(index) {
@@ -535,6 +572,8 @@
             let totalQty = 0;
             
             list.innerHTML = currentOrder.map((item, index) => {
+                let isPaid = item.isPaid || false;
+                
                 let singleToppingPrice = item.toppings.reduce((sum, t) => sum + t.price, 0);
                 let totalItemPrice = (item.price + singleToppingPrice) * item.qty;
                 
@@ -561,6 +600,11 @@
                                 <div class="action-buttons-row">
                                     <button class="btn-add-top" onclick="openToppingModal(${index})">+ Topping</button>
                                     <button class="btn-user-tag" onclick="updateUserTag(${index})">Người đặt</button>
+                                    
+                                    <label class="paid-checkbox-label ${isPaid ? 'paid' : 'unpaid'}">
+                                        <input type="checkbox" ${isPaid ? 'checked' : ''} onchange="toggleItemPaid(${index}, this.checked)" style="accent-color: #27ae60; margin:0; cursor:pointer;">
+                                        Đã thu
+                                    </label>
                                 </div>
 
                                 <div class="sub-info-row">
@@ -575,7 +619,6 @@
                                 <span style="font-weight:bold; font-size:15px; min-width:14px; text-align:center;">${item.qty}</span>
                                 <button class="btn-qty" onclick="updateQty(${index}, 1)">+</button>
                             </div>
-                            <!-- Khung chứa tổng tiền món (Vẫn hiển thị trong giỏ hàng) -->
                             <div class="item-total-price-box"><strong>${totalItemPrice.toLocaleString()}</strong></div>
                         </div>
                     </div>`;
@@ -600,30 +643,25 @@
             list.querySelectorAll('.order-item').forEach(itemDiv => {
                 itemDiv.style.padding = "8px 0"; 
 
-                // --- 1. Xóa giá tổng của từng món ---
                 const totalPriceBox = itemDiv.querySelector('.item-total-price-box');
                 if (totalPriceBox) totalPriceBox.remove();
 
-                // --- 2. Xóa đơn giá của món ---
                 const subInfo = itemDiv.querySelector('.sub-info-row');
                 if (subInfo) {
                     const priceSmall = subInfo.querySelector('small');
                     if (priceSmall) priceSmall.remove();
                 }
 
-                // --- 3. Xóa giá tiền hiển thị ở phần topping ---
                 const toppingLine = itemDiv.querySelector('.topping-line');
                 if (toppingLine) {
                     const boldText = toppingLine.querySelector('.topping-bold-text');
                     if (boldText) {
-                        // Xóa các cụm chữ dạng (+6k), (+10k) ra khỏi tên topping
                         let text = boldText.innerText;
                         text = text.replace(/\s*\(\+[0-9.]+k\)/g, '');
                         boldText.innerText = text;
                     }
                 }
 
-                // --- Định dạng lại UI bill ---
                 const ctrl = itemDiv.querySelector('.qty-controls');
                 if(ctrl) {
                     const span = ctrl.querySelector('span').innerText;
@@ -633,12 +671,6 @@
                     ctrl.style.fontSize = "16px";
                 }
                 
-                const btnTop = itemDiv.querySelector('.btn-add-top');
-                if (btnTop) btnTop.remove();
-                
-                const btnUser = itemDiv.querySelector('.btn-user-tag');
-                if (btnUser) btnUser.remove();
-
                 const actionRow = itemDiv.querySelector('.action-buttons-row');
                 if (actionRow) actionRow.remove();
 
@@ -660,7 +692,6 @@
                 }
             });
 
-            // --- 4. Tạo footer nhưng KHÔNG IN TỔNG TIỀN ---
             const footer = document.createElement('div');
             footer.innerHTML = `
                 <div style="display:flex; justify-content:center; padding: 10px 0; font-size: 14px; font-style:italic; border-top: 1px dashed #ccc; margin-top:10px; color:#666;">
